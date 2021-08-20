@@ -1,0 +1,53 @@
+const core = require('@actions/core');
+const JiraApi = require('jira-client');
+const versionClient = require('./version-client');
+
+const IN_JIRA_HOST = 'jiraHost'
+const IN_USERNAME = 'username'
+const IN_TOKEN = 'token'
+const IN_VERSION = 'version'
+const IN_PROJECT_ID = 'projectId'
+const IN_ISSUE_IDS = 'issueIds'
+const IN_RELEASE = 'issuedIds'
+
+module.exports.action = async function() {
+    try {
+        const jiraHost = core.getInput(IN_JIRA_HOST)
+        const username = core.getInput(IN_USERNAME)
+        const token = core.getInput(IN_TOKEN)
+        const projectId = core.getInput(IN_PROJECT_ID)
+        const version = core.getInput(IN_VERSION)
+        const issueIdString = core.getInput(IN_ISSUE_IDS)
+        const releaseString = core.getInput(IN_RELEASE)
+
+        const issues = await getIssues(issueIdString)
+        const shouldRelease = releaseString == 'true' ? true : false
+
+        const client = createJiraClient(jiraHost, username, token)
+        versionClient.upsertVersion(client, version, projectId)
+        issues.forEach(issue => {
+            versionClient.assignVersionToIssue(client, version, issue)
+        })
+        if (shouldRelease) {
+            versionClient.releaseVersion(client, version, projectId)
+        }
+    } catch (error) {
+        core.setFailed(error.message);
+    }
+}
+
+function getIssues(issueIdString) {
+    if (issueIdString == '') {
+        return []
+    }
+    return JSON.parse(issueIdString)
+}
+
+function createJiraClient(jiraHost, username, token) {
+    return new JiraApi({
+        protocol: 'https',
+        host: jiraHost,
+        username: username,
+        password: token
+    })
+}
