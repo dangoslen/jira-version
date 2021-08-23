@@ -3,7 +3,7 @@ const versionClient = require('../src/version-client');
 
 const mockUpsertVersion = jest.spyOn(versionClient, 'upsertVersion')
     .mockImplementation((client, version) => {
-  return
+  return Promise.resolve(null)
 })
 
 const mockAssignVersionToIssue = jest.spyOn(versionClient, 'assignVersionToIssue')

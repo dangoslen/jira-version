@@ -27,7 +27,7 @@ inputs:
   releaseNotes:
     description: 'The release notes to add to the release in Markdown format'
     required: true
-    defualt: ''
+    default: ''
 outputs:
   versionUrl: # output will be available to future steps
     description: 'The URL to the version in Jira'

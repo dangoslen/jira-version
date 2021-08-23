@@ -8,7 +8,7 @@ const IN_TOKEN = 'token'
 const IN_VERSION = 'version'
 const IN_PROJECT_ID = 'projectId'
 const IN_ISSUE_IDS = 'issueIds'
-const IN_RELEASE = 'issuedIds'
+const IN_RELEASE = 'release'
 
 module.exports.action = async function() {
     try {
@@ -18,13 +18,12 @@ module.exports.action = async function() {
         const projectId = core.getInput(IN_PROJECT_ID)
         const version = core.getInput(IN_VERSION)
         const issueIdString = core.getInput(IN_ISSUE_IDS)
-        const releaseString = core.getInput(IN_RELEASE)
+        const shouldRelease = core.getBooleanInput(IN_RELEASE)
 
         const issues = await getIssues(issueIdString)
-        const shouldRelease = releaseString == 'true' ? true : false
 
         const client = createJiraClient(jiraHost, username, token)
-        versionClient.upsertVersion(client, version, projectId)
+        await versionClient.upsertVersion(client, version, projectId)
         issues.forEach(issue => {
             versionClient.assignVersionToIssue(client, version, issue)
         })
