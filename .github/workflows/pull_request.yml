@@ -100,7 +100,7 @@ jobs:
       - name: grab Jira IDs
         id: grab-jiras
         run: |
-          echo ${{ steps.changelog_reader.outputs.changes }} > version-changes.txt
+          echo "${{ steps.changelog_reader.outputs.changes }}" > version-changes.txt
           ITEMS=$(grep -o "GHA-\d*" version-changes.txt | gsed -r 's/(.+)/"\1"/' | tr '\n' ',')
           echo ::set-output name=jira-ids::$(echo "[$ITEMS]")
       
