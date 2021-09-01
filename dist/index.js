@@ -45158,7 +45158,7 @@ const core = __nccwpck_require__(2186);
 const JiraApi = __nccwpck_require__(6411);
 const versionClient = __nccwpck_require__(9880);
 
-const IN_JIRA_HOST = 'jiraHost'
+const IN_JIRA_HOST = 'host'
 const IN_USERNAME = 'username'
 const IN_TOKEN = 'token'
 const IN_VERSION = 'version'

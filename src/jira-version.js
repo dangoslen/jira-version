@@ -2,7 +2,7 @@ const core = require('@actions/core');
 const JiraApi = require('jira-client');
 const versionClient = require('./version-client');
 
-const IN_JIRA_HOST = 'jiraHost'
+const IN_JIRA_HOST = 'host'
 const IN_USERNAME = 'username'
 const IN_TOKEN = 'token'
 const IN_VERSION = 'version'
