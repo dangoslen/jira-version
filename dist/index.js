@@ -45177,8 +45177,8 @@ module.exports.action = async function() {
         const shouldRelease = core.getBooleanInput(IN_RELEASE)
 
         const issues = await getIssues(issueIdString);
-
         const client = createJiraClient(jiraHost, username, token)
+        
         versionClient.upsertVersion(client, version, projectId)
         .then(() => {
             issues.forEach(issue => {
@@ -45215,12 +45215,14 @@ function createJiraClient(jiraHost, username, token) {
 const core = __nccwpck_require__(2186);
 
 module.exports.upsertVersion = async function(client, version, projectId) {
-    client.getVersions(projectId).then(async (response) => {
+    client.getVersions(projectId).then((response) => {
+        core.info(JSON.stringify(response))
         const foundVersion = response.filter(x => x.name == version)
         if (foundVersion.length == 0) {
             createVersion(client, version, projectId)
         }
     }).catch(err => {
+        core.warning(err)
         throw new Error('Error checking for the version')
     });
 }
@@ -45235,6 +45237,7 @@ module.exports.assignVersionToIssue = async function(client, version, issueId) {
             updateIssue(client, issueId, issue);
         }
     }).catch(err => {
+        core.warning(err)
         core.warning(`Could not find issue '${issueId}`)
     });
 }
@@ -45248,6 +45251,7 @@ module.exports.releaseVersion = async function(client, version, projectId) {
         updated.released = true
         await updateVersion(client, updated.id, updated)
     }).catch(err => {
+        core.warning(err)
         throw new Error('Error releasing version')
     });
 }
@@ -45258,18 +45262,21 @@ function createVersion(client, version, projectId) {
         projectId: projectId
     }  
     client.createVersion(versionBody).catch(err => {
+        core.warning(err)
         throw new Error(`Error creating version: ${err.reason}`)
     });
 }
 
 function updateIssue(client, issueId, issue) {
     client.updateIssue(issueId, issue).catch(err => {
+        core.warning(err)
         core.warning(`Could not add version to issue '${issueId}`)
     });
 }
 
 function updateVersion(client, versionId, version) {
     client.updateVersion(versionId, version).catch(err => {
+        core.warning(err)
         core.warning(`Could not release version '${versionId}`)
     });
 }

@@ -21,8 +21,8 @@ module.exports.action = async function() {
         const shouldRelease = core.getBooleanInput(IN_RELEASE)
 
         const issues = await getIssues(issueIdString);
-
         const client = createJiraClient(jiraHost, username, token)
+        
         versionClient.upsertVersion(client, version, projectId)
         .then(() => {
             issues.forEach(issue => {
