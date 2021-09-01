@@ -20,16 +20,16 @@ module.exports.action = async function() {
         const issueIdString = core.getInput(IN_ISSUE_IDS)
         const shouldRelease = core.getBooleanInput(IN_RELEASE)
 
-        const issues = await getIssues(issueIdString)
+        const issues = await getIssues(issueIdString);
 
         const client = createJiraClient(jiraHost, username, token)
-        await versionClient.upsertVersion(client, version, projectId)
-        issues.forEach(issue => {
-            versionClient.assignVersionToIssue(client, version, issue)
-        })
-        if (shouldRelease) {
-            versionClient.releaseVersion(client, version, projectId)
-        }
+        versionClient.upsertVersion(client, version, projectId)
+        .then(() => {
+            issues.forEach(issue => {
+                versionClient.assignVersionToIssue(client, version, issue)
+            })
+            shouldRelease && versionClient.releaseVersion(client, version, projectId)
+        }).catch(err => { throw new Error(err) })
     } catch (error) {
         core.setFailed(error.message);
     }
