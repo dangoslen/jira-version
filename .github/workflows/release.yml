@@ -52,16 +52,16 @@ jobs:
           draft: false
           prerelease: false
       
-      # - name: create and release jira
-      #   if: ${{ steps.check_release.outputs.missing == 'true' }}
-      #   uses: ./
-      #   with:
-      #     host: dangoslen.atlassian.net
-      #     username: dwgoslen@gmail.com
-      #     token: ${{ secrets.JIRA_TOKEN }}
-      #     issueIds: ${{ jira-ids }}
-      #     release: true
-      #     version: ${{ steps.read-version.outputs.version }}
+      - name: create and release jira
+        if: ${{ steps.check_release.outputs.missing == 'true' }}
+        uses: ./
+        with:
+          host: dangoslen.atlassian.net
+          username: ${{ secrets.JIRA_USER }}
+          token: ${{ secrets.JIRA_TOKEN }}
+          issueIds: ${{ jira-ids }}
+          release: true
+          version: ${{ steps.read-version.outputs.version }}
 
       # - name: update major version tag
       #   uses: richardsimko/update-tag@v1
