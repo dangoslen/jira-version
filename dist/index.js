@@ -45218,7 +45218,7 @@ module.exports.upsertVersion = async function(client, version, projectId) {
     client.getVersions(projectId).then(async (response) => {
         const foundVersion = response.filter(x => x.name == version)
         if (foundVersion.length == 0) {
-            await createVersion(client, version, projectId)
+            createVersion(client, version, projectId)
         }
     }).catch(err => {
         throw new Error('Error checking for the version')
@@ -45252,7 +45252,7 @@ module.exports.releaseVersion = async function(client, version, projectId) {
     });
 }
 
-async function createVersion(client, version, projectId) {
+function createVersion(client, version, projectId) {
     const versionBody = {
         version: version,
         projectId: projectId
@@ -45262,13 +45262,13 @@ async function createVersion(client, version, projectId) {
     });
 }
 
-async function updateIssue(client, issueId, issue) {
+function updateIssue(client, issueId, issue) {
     client.updateIssue(issueId, issue).catch(err => {
         core.warning(`Could not add version to issue '${issueId}`)
     });
 }
 
-async function updateVersion(client, versionId, version) {
+function updateVersion(client, versionId, version) {
     client.updateVersion(versionId, version).catch(err => {
         core.warning(`Could not release version '${versionId}`)
     });
