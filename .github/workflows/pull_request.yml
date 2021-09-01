@@ -40,10 +40,12 @@ jobs:
         with: 
           token: ${{ secrets.ACTION_TOKEN }}
           ref: ${{ github.event.pull_request.head.ref }}
+      
       - id: read-version
         run: |
           echo "::set-output name=version::$(jq -r ".version" package.json)"
           echo "::set-output name=tag::v$(jq -r ".version" package.json)"
+      
       - uses: dangoslen/dependabot-changelog-helper@v1
         with:
           version: ${{ steps.read-version.outputs.tag }}
@@ -55,13 +57,13 @@ jobs:
           commit_message: "Update changelog"
 
       - id: changelog-enforcer
-        uses: ./
+        uses: dangoslen/changelog-enforcer@v2
         with:
           skipLabels: "skip-changelog"
           expectedLatestVersion: ${{ steps.read-version.outputs.tag }}
           
-      - if: failure()
-        uses: unsplash/comment-on-pr@master
+      - uses: unsplash/comment-on-pr@master
+        if: failure()
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -78,11 +80,11 @@ jobs:
           path: ./CHANGELOG.md
 
       - id: check_release
+        if: ${{ steps.check_release.outputs.missing }}
         run: |
           TAG=$(git ls-remote --tags origin | grep ${{ steps.read-version.outputs.tag }} || [[ $? == 1 ]] && echo '')
           MISSING=$([[ -z "$TAG" ]] && echo 'true' || echo 'false')
           echo ::set-output name=missing::$MISSING
-      - if: ${{ steps.check_release.outputs.missing }}
         uses: unsplash/comment-on-pr@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -93,3 +95,13 @@ jobs:
               <summary>Preview of Release Notes to be Created</summary>
               ${{ steps.changelog_reader.outputs.changes }}
             </details>
+      
+      - name: create and release jira
+        uses: ./
+        with:
+          host: dangoslen.atlassian.net
+          username: ${{ secrets.JIRA_USER }}
+          token: ${{ secrets.JIRA_TOKEN }}
+          issueIds: ${{ jira-ids }}
+          release: true
+          version: ${{ steps.read-version.outputs.version }}
