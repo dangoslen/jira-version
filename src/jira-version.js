@@ -24,12 +24,14 @@ module.exports.action = async function() {
         const client = createJiraClient(jiraHost, username, token)
         
         versionClient.upsertVersion(client, version, projectId)
-        .then(() => {
-            issues.forEach(issue => {
-                versionClient.assignVersionToIssue(client, version, issue)
+            .then(() => {
+                issues.forEach(issue => {
+                    versionClient.assignVersionToIssue(client, version, issue)
+                })
+                shouldRelease && versionClient.releaseVersion(client, version, projectId)
+            }).catch(err => { 
+                throw new Error(err) 
             })
-            shouldRelease && versionClient.releaseVersion(client, version, projectId)
-        }).catch(err => { throw new Error(err) })
     } catch (error) {
         core.setFailed(error.message);
     }
