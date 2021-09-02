@@ -45215,11 +45215,11 @@ function createJiraClient(jiraHost, username, token) {
 const core = __nccwpck_require__(2186);
 
 module.exports.upsertVersion = async function(client, version, projectId) {
-    client.getVersions(projectId).then((response) => {
+    client.getVersions(projectId).then(async (response) => {
         core.info(JSON.stringify(response))
         const foundVersion = response.filter(x => x.name == version)
         if (foundVersion.length == 0) {
-            createVersion(client, version, projectId)
+            await createVersion(client, version, projectId)
         }
     }).catch(err => {
         core.warning(err)
@@ -45256,7 +45256,7 @@ module.exports.releaseVersion = async function(client, version, projectId) {
     });
 }
 
-function createVersion(client, version, projectId) {
+async function createVersion(client, version, projectId) {
     const versionBody = {
         version: version,
         projectId: projectId
@@ -45267,14 +45267,14 @@ function createVersion(client, version, projectId) {
     });
 }
 
-function updateIssue(client, issueId, issue) {
+async function updateIssue(client, issueId, issue) {
     client.updateIssue(issueId, issue).catch(err => {
         core.warning(err)
         core.warning(`Could not add version to issue '${issueId}`)
     });
 }
 
-function updateVersion(client, versionId, version) {
+async function updateVersion(client, versionId, version) {
     client.updateVersion(versionId, version).catch(err => {
         core.warning(err)
         core.warning(`Could not release version '${versionId}`)
