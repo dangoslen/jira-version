@@ -45263,7 +45263,7 @@ module.exports.releaseVersion = async function(client, version, projectId) {
 
 async function createVersion(client, version, projectId) {
     const versionBody = {
-        version: version,
+        name: version,
         projectId: projectId
     }  
     await client.createVersion(versionBody)

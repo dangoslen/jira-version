@@ -32,7 +32,7 @@ test('upsert version should create a new version', async () => {
   expect(mockGetVersions).toHaveBeenCalled()
   expect(mockCreateVersion).toBeCalledWith(
     expect.objectContaining({
-      version: 'version',
+      name: 'version',
       projectId: 'project'
     })
   )
