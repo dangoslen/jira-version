@@ -101,7 +101,7 @@ jobs:
         id: grab-jiras
         run: |
           echo "${{ steps.changelog_reader.outputs.changes }}" > version-changes.txt
-          ITEMS=$(grep -o "GHA-\d*" version-changes.txt | gsed -r 's/(.+)/"\1"/' | tr '\n' ',')
+          ITEMS=$(grep -o "GHA-\d*" version-changes.txt | sed -r 's/(.+)/"\1"/' | tr '\n' ',')
           echo ::set-output name=jira-ids::$(echo "[$ITEMS]")
       
       - name: create and release jira
@@ -110,6 +110,7 @@ jobs:
           host: dangoslen.atlassian.net
           username: ${{ secrets.JIRA_USER }}
           token: ${{ secrets.JIRA_TOKEN }}
+          projectId: GHA
           issueIds: ${{ steps.grab-jiars.outputs.jira-ids }}
           release: true
           version: ${{ steps.read-version.outputs.version }}
