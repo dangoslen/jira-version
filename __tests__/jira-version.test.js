@@ -2,26 +2,26 @@ const jiraVersion = require('../src/jira-version');
 const versionClient = require('../src/version-client');
 
 const mockUpsertVersion = jest.spyOn(versionClient, 'upsertVersion')
-    .mockImplementation((client, version) => {
-  return Promise.resolve(null)
-})
+  .mockImplementation((client, version) => {
+    return Promise.resolve(null)
+  })
 
 const mockAssignVersionToIssue = jest.spyOn(versionClient, 'assignVersionToIssue')
-    .mockImplementation((client, version, issueId) => {
-  return
-})
+  .mockImplementation((client, version, issueId) => {
+    return Promise.resolve(null)
+  })
 
 const mockReleaseVersion = jest.spyOn(versionClient, 'releaseVersion')
-    .mockImplementation((client, version, projectId) => {
-  return
-})
+  .mockImplementation((client, version, projectId) => {
+    return Promise.resolve(null)
+  })
 
 beforeEach(() => {
   jest.clearAllMocks()
 });
 
 afterEach(() => {
-  
+
 });
 
 // Should grab all the inputs properly

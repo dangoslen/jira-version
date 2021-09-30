@@ -45182,12 +45182,22 @@ module.exports.action = async function () {
         .then(() => {
             issues.forEach(issue => {
                 versionClient.assignVersionToIssue(client, version, issue)
+                    .catch(error => { core.setFailed(error.message); })
+
             })
             shouldRelease && versionClient.releaseVersion(client, version, projectKey)
+                .catch(error => { core.setFailed(error.message); })
         })
         .catch(error => {
             core.setFailed(error.message);
         })
+}
+
+function addVersionToIssues(issues) {
+    issues.forEach(issue => {
+        versionClient.assignVersionToIssue(client, version, issue)
+            .catch(error => { core.setFailed(error.message); })
+    })
 }
 
 function getIssues(issueIdString) {
