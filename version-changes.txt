@@ -1,2 +1,3 @@
 ### Added
   - Creates an initial release of Jira Version (GHA-1)
+	- another issue GHA-123
