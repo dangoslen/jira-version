@@ -10,8 +10,8 @@ inputs:
   token:
     description: 'The token of the user'
     required: true
-  projectId:
-    description: 'The ID of the project in which to create the version'
+  projectKey:
+    description: 'The Key of the project in which to create the version'
     required: true
   version:
     description: 'The version to manage in Jira'

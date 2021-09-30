@@ -45162,7 +45162,7 @@ const IN_JIRA_HOST = 'host'
 const IN_USERNAME = 'username'
 const IN_TOKEN = 'token'
 const IN_VERSION = 'version'
-const IN_PROJECT_ID = 'projectId'
+const IN_PROJECT_KEY = 'projectKey'
 const IN_ISSUE_IDS = 'issueIds'
 const IN_RELEASE = 'release'
 
@@ -45171,7 +45171,7 @@ module.exports.action = async function() {
         const jiraHost = core.getInput(IN_JIRA_HOST)
         const username = core.getInput(IN_USERNAME)
         const token = core.getInput(IN_TOKEN)
-        const projectId = core.getInput(IN_PROJECT_ID)
+        const projectKey = core.getInput(IN_PROJECT_KEY)
         const version = core.getInput(IN_VERSION)
         const issueIdString = core.getInput(IN_ISSUE_IDS)
         const shouldRelease = core.getBooleanInput(IN_RELEASE)
@@ -45179,12 +45179,12 @@ module.exports.action = async function() {
         const issues = await getIssues(issueIdString);
         const client = createJiraClient(jiraHost, username, token)
         
-        versionClient.upsertVersion(client, version, projectId)
+        versionClient.upsertVersion(client, version, projectKey)
             .then(() => {
                 issues.forEach(issue => {
                     versionClient.assignVersionToIssue(client, version, issue)
                 })
-                shouldRelease && versionClient.releaseVersion(client, version, projectId)
+                shouldRelease && versionClient.releaseVersion(client, version, projectKey)
             }).catch(err => { 
                 throw new Error(err) 
             })
@@ -45216,23 +45216,28 @@ function createJiraClient(jiraHost, username, token) {
 
 const core = __nccwpck_require__(2186);
 
-module.exports.upsertVersion = async function(client, version, projectId) {
-    var response = await client.getVersions(projectId)
+module.exports.upsertVersion = async function (client, version, projectKey) {
+    var project = await client.getProject(projectKey)
+        .catch(err => {
+            core.warning(err)
+            throw new Error('Error getting the project')
+        });
+    var response = await client.getVersions(projectKey)
         .catch(err => {
             core.warning(err)
             throw new Error('Error checking for the version')
         });
-    
+
     core.info(JSON.stringify(response))
     const foundVersion = response.filter(x => x.name == version)
     if (foundVersion.length == 0) {
-        await createVersion(client, version, projectId)
+        await createVersion(client, version, project.id)
     }
 }
 
-module.exports.assignVersionToIssue = async function(client, version, issueId) {
+module.exports.assignVersionToIssue = async function (client, version, issueId) {
     client.getIssue(issueId)
-        .then(issue => {
+        .then((issue) => {
             const fixVersions = issue.fields.fixVersions
             if (!fixVersions.includes(version)) {
                 const updated = [...fixVersions]
@@ -45246,15 +45251,15 @@ module.exports.assignVersionToIssue = async function(client, version, issueId) {
         });
 }
 
-module.exports.releaseVersion = async function(client, version, projectId) {
-    client.getVersions(projectId)
+module.exports.releaseVersion = async function (client, version, projectKey) {
+    client.getVersions(projectKey)
         .then(async (response) => {
             // Version exists, nothing to todo
             const foundVersion = response.filter(x => x.name == version)[0]
             const updated = {}
             Object.assign(updated, foundVersion)
             updated.released = true
-            updateVersion(client, updated.id, updated)
+            await updateVersion(client, updated.id, updated)
         }).catch(err => {
             core.warning(err)
             throw new Error('Error releasing version')
@@ -45265,7 +45270,7 @@ async function createVersion(client, version, projectId) {
     const versionBody = {
         name: version,
         projectId: projectId
-    }  
+    }
     await client.createVersion(versionBody)
         .catch(err => {
             core.warning(err)
@@ -45279,10 +45284,10 @@ async function updateIssue(client, issueId, issue) {
             core.warning(err)
             core.warning(`Could not add version to issue '${issueId}`)
         });
-    }
+}
 
 async function updateVersion(client, versionId, version) {
-    client.updateVersion(versionId, version)
+    await client.updateVersion(versionId, version)
         .catch(err => {
             core.warning(err)
             core.warning(`Could not release version '${versionId}`)

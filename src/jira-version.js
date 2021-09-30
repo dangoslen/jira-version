@@ -6,7 +6,7 @@ const IN_JIRA_HOST = 'host'
 const IN_USERNAME = 'username'
 const IN_TOKEN = 'token'
 const IN_VERSION = 'version'
-const IN_PROJECT_ID = 'projectId'
+const IN_PROJECT_KEY = 'projectKey'
 const IN_ISSUE_IDS = 'issueIds'
 const IN_RELEASE = 'release'
 
@@ -15,7 +15,7 @@ module.exports.action = async function() {
         const jiraHost = core.getInput(IN_JIRA_HOST)
         const username = core.getInput(IN_USERNAME)
         const token = core.getInput(IN_TOKEN)
-        const projectId = core.getInput(IN_PROJECT_ID)
+        const projectKey = core.getInput(IN_PROJECT_KEY)
         const version = core.getInput(IN_VERSION)
         const issueIdString = core.getInput(IN_ISSUE_IDS)
         const shouldRelease = core.getBooleanInput(IN_RELEASE)
@@ -23,12 +23,12 @@ module.exports.action = async function() {
         const issues = await getIssues(issueIdString);
         const client = createJiraClient(jiraHost, username, token)
         
-        versionClient.upsertVersion(client, version, projectId)
+        versionClient.upsertVersion(client, version, projectKey)
             .then(() => {
                 issues.forEach(issue => {
                     versionClient.assignVersionToIssue(client, version, issue)
                 })
-                shouldRelease && versionClient.releaseVersion(client, version, projectId)
+                shouldRelease && versionClient.releaseVersion(client, version, projectKey)
             }).catch(err => { 
                 throw new Error(err) 
             })
