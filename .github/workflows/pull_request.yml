@@ -110,7 +110,7 @@ jobs:
           host: dangoslen.atlassian.net
           username: ${{ secrets.JIRA_USER }}
           token: ${{ secrets.JIRA_TOKEN }}
-          projectId: GHA
+          projectKey: GHA
           issueIds: ${{ steps.grab-jiars.outputs.jira-ids }}
           release: true
           version: ${{ steps.read-version.outputs.version }}
