@@ -45184,9 +45184,10 @@ module.exports.action = async function () {
                 versionClient.assignVersionToIssue(client, version, issue)
             })
             shouldRelease && versionClient.releaseVersion(client, version, projectKey)
-        }).catch(err => {
+        })
+        .catch(error => {
             core.setFailed(error.message);
-        });
+        })
 }
 
 function getIssues(issueIdString) {
@@ -45242,7 +45243,6 @@ module.exports.assignVersionToIssue = async function (client, version, issueId) 
                 updateIssue(client, issueId, issue);
             }
         }).catch(err => {
-            core.warning(err)
             core.warning(`Could not find issue '${issueId}`)
         });
 }
@@ -45257,7 +45257,6 @@ module.exports.releaseVersion = async function (client, version, projectKey) {
             updated.released = true
             await updateVersion(client, updated.id, updated)
         }).catch(err => {
-            core.warning(err)
             throw new Error('Error releasing version')
         });
 }
@@ -45269,7 +45268,6 @@ async function createVersion(client, version, projectId) {
     }
     await client.createVersion(versionBody)
         .catch(err => {
-            core.warning(err)
             throw new Error(`Error creating version: ${err.reason}`)
         });
 }
@@ -45277,16 +45275,14 @@ async function createVersion(client, version, projectId) {
 async function updateIssue(client, issueId, issue) {
     await client.updateIssue(issueId, issue)
         .catch(err => {
-            core.warning(err)
-            core.warning(`Could not add version to issue '${issueId}`)
+            core.warning(`Could not add version to issue '${issueId}'`)
         });
 }
 
 async function updateVersion(client, versionId, version) {
     await client.updateVersion(versionId, version)
         .catch(err => {
-            core.warning(err)
-            core.warning(`Could not release version '${versionId}`)
+            core.warning(`Could not release version '${versionId}'`)
         });
 }
 
