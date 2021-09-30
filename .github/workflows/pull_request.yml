@@ -111,6 +111,6 @@ jobs:
           username: ${{ secrets.JIRA_USER }}
           token: ${{ secrets.JIRA_TOKEN }}
           projectKey: GHA
-          issueIds: ${{ steps.grab-jiars.outputs.jira-ids }}
+          issueIds: ${{ steps.grab-jiras.outputs.jira-ids }}
           release: true
           version: ${{ steps.read-version.outputs.version }}
