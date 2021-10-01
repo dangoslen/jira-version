@@ -50,6 +50,7 @@ function createJiraClient(jiraHost, username, token) {
         protocol: 'https',
         host: jiraHost,
         username: username,
-        password: token
+        password: token,
+        apiVersion: 3
     })
 }
