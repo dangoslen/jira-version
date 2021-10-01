@@ -64,9 +64,7 @@ test('add version to issue should add the version to the issue when it does not 
   const validate = function (issueId, issue) {
     expect(issueId).toBe('issue')
     expect(issue).toMatchObject({
-      fields: {
-        fixVersions: ['version']
-      }
+      update: { fixVersions: [{ add: { name: 'version' } }] }
     })
 
     done()

@@ -24,12 +24,8 @@ module.exports.assignVersionToIssue = async function (client, version, issueId) 
         .then((issue) => {
             const fixVersions = issue.fields.fixVersions
             if (!fixVersions.includes(version)) {
-                const updated = [...fixVersions]
-                updated.push(version)
                 update = {
-                    fields: {
-                        fixVersions: updated
-                    }
+                    update: { fixVersions: [{ add: { name: version } }] }
                 }
                 updateIssue(client, issueId, update)
             }
