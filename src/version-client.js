@@ -23,10 +23,13 @@ module.exports.assignVersionToIssue = async function (client, version, issueId) 
     client.getIssue(issueId)
         .then((issue) => {
             const fixVersions = issue.fields.fixVersions
+            core.info(fixVersions)
             if (!fixVersions.includes(version)) {
                 const updated = [...fixVersions]
                 updated.push(version)
                 issue.fields.fixVersions = updated
+                core.info(updated)
+                core.info(JSON.stringify(issue))
                 updateIssue(client, issueId, issue);
             }
         }).catch(err => {
