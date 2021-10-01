@@ -39,7 +39,9 @@ module.exports.releaseVersion = async function (client, version, projectKey) {
     client.getVersions(projectKey)
         .then(async (response) => {
             const release = response.filter(x => x.name == version)[0]
-            release.released = true
+            const update = {
+                released: true
+            }
             await updateVersion(client, release.id, release)
         }).catch(err => {
             throw new Error(`Error releasing version '${version}' due to error: ${err}`)
