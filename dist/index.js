@@ -45258,9 +45258,10 @@ module.exports.releaseVersion = async function (client, version, projectKey) {
         .then(async (response) => {
             const release = response.filter(x => x.name == version)[0]
             const update = {
+                id: release.id,
                 released: true
             }
-            await updateVersion(client, release.id, release)
+            await updateVersion(client, update)
         }).catch(err => {
             throw new Error(`Error releasing version '${version}' due to error: ${err}`)
         });
@@ -45284,10 +45285,10 @@ async function updateIssue(client, issueId, issue) {
         });
 }
 
-async function updateVersion(client, versionId, version) {
-    await client.updateVersion(versionId, version)
+async function updateVersion(client, version) {
+    await client.updateVersion(version)
         .catch(err => {
-            core.warning(`Could not release version '${versionId}' due to error: ${err}`)
+            core.warning(`Could not release version '${version.id}' due to error: ${err}`)
         });
 }
 
