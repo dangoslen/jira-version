@@ -34,7 +34,12 @@ jobs:
   # test action works running from the graph
   jira-release:
     runs-on: ubuntu-latest
-    steps:       
+    steps: 
+      - uses: actions/checkout@v2.3.4
+        with: 
+          token: ${{ secrets.ACTION_TOKEN }}
+          ref: ${{ github.event.pull_request.head.ref }}
+
       - name: grab Jira IDs
         id: grab-jiras
         # Grep for our project key following by a '-' and any digits using Pearl style regex and only printing what was matched
