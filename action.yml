@@ -1,13 +1,36 @@
 name: 'Wait'
 description: 'Wait a designated number of milliseconds'
 inputs:
-  milliseconds:  # id of input
-    description: 'number of milliseconds to wait'
+  host:
+    description: 'Your Jira hostname'
     required: true
-    default: '1000'
+  username:
+    description: 'The email of the user'
+    required: true
+  token:
+    description: 'The token of the user'
+    required: true
+  projectKey:
+    description: 'The Key of the project in which to create the version'
+    required: true
+  version:
+    description: 'The version to manage in Jira'
+    required: true
+  issueIds:
+    description: 'A JSON array of Jira issue IDs to be associated with the version'
+    required: true
+    default: '[]'
+  release:
+    description: 'Whether to release the version or not'
+    required: true
+    default: false
+  releaseNotes:
+    description: 'The release notes to add to the release in Markdown format'
+    required: true
+    default: ''
 outputs:
-  time: # output will be available to future steps
-    description: 'The message to output'
+  versionUrl: # output will be available to future steps
+    description: 'The URL to the version in Jira'
 runs:
   using: 'node12'
   main: 'dist/index.js'
