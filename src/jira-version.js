@@ -25,6 +25,7 @@ module.exports.action = async function () {
     versionClient.upsertVersion(client, version, projectKey)
         .then(() => {
             issues.forEach(issue => {
+                core.info(`Adding issue '${issue}' to version '${version}'`)
                 versionClient.assignVersionToIssue(client, version, issue)
                     .catch(error => { core.setFailed(error.message); })
 
@@ -35,13 +36,6 @@ module.exports.action = async function () {
         .catch(error => {
             core.setFailed(error.message);
         })
-}
-
-function addVersionToIssues(issues) {
-    issues.forEach(issue => {
-        versionClient.assignVersionToIssue(client, version, issue)
-            .catch(error => { core.setFailed(error.message); })
-    })
 }
 
 function getIssues(issueIdString) {

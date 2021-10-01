@@ -23,14 +23,12 @@ module.exports.assignVersionToIssue = async function (client, version, issueId) 
     client.getIssue(issueId)
         .then((issue) => {
             const fixVersions = issue.fields.fixVersions
-            core.info(fixVersions)
             if (!fixVersions.includes(version)) {
                 const updated = [...fixVersions]
                 updated.push(version)
                 issue.fields.fixVersions = updated
-                core.info(updated)
-                core.info(JSON.stringify(issue))
-                updateIssue(client, issueId, issue);
+                updateIssue(client, issueId, issue)
+
             }
         }).catch(err => {
             core.warning(err)
@@ -41,12 +39,9 @@ module.exports.assignVersionToIssue = async function (client, version, issueId) 
 module.exports.releaseVersion = async function (client, version, projectKey) {
     client.getVersions(projectKey)
         .then(async (response) => {
-            // Version exists, nothing to todo
-            const foundVersion = response.filter(x => x.name == version)[0]
-            const updated = {}
-            Object.assign(updated, foundVersion)
-            updated.released = true
-            await updateVersion(client, updated.id, updated)
+            const release = response.filter(x => x.name == version)[0]
+            release.released = true
+            await updateVersion(client, release.id, release)
         }).catch(err => {
             throw new Error(`Error releasing version '${version}' due to error: ${err}`)
         });

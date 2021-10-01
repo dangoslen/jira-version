@@ -56,7 +56,7 @@ test('add version to issue should add the version to the issue when it does not 
   const mockGetIssue = jest.fn(issueId => {
     return Promise.resolve({
       fields: {
-        'fixVersions': []
+        fixVersions: []
       }
     })
   })
@@ -65,7 +65,7 @@ test('add version to issue should add the version to the issue when it does not 
     expect(issueId).toBe('issue')
     expect(issue).toMatchObject({
       fields: {
-        'fixVersions': ['version']
+        fixVersions: ['version']
       }
     })
 
