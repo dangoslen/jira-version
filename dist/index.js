@@ -45243,9 +45243,12 @@ module.exports.assignVersionToIssue = async function (client, version, issueId) 
             if (!fixVersions.includes(version)) {
                 const updated = [...fixVersions]
                 updated.push(version)
-                issue.fields.fixVersions = updated
-                updateIssue(client, issueId, issue)
-
+                update = {
+                    fields: {
+                        fixVersions: updated
+                    }
+                }
+                updateIssue(client, issueId, update)
             }
         }).catch(err => {
             core.warning(err)
