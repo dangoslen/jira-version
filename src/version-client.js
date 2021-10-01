@@ -30,6 +30,7 @@ module.exports.assignVersionToIssue = async function (client, version, issueId) 
                 updateIssue(client, issueId, issue);
             }
         }).catch(err => {
+            core.warning(err)
             core.warning(`Could not find issue '${issueId}`)
         });
 }
@@ -44,7 +45,7 @@ module.exports.releaseVersion = async function (client, version, projectKey) {
             updated.released = true
             await updateVersion(client, updated.id, updated)
         }).catch(err => {
-            throw new Error('Error releasing version')
+            throw new Error(`Error releasing version '${version}' due to error: ${err}`)
         });
 }
 
@@ -55,20 +56,20 @@ async function createVersion(client, version, projectId) {
     }
     await client.createVersion(versionBody)
         .catch(err => {
-            throw new Error(`Error creating version: ${err.reason}`)
+            throw new Error(`Error creating version: ${err}`)
         });
 }
 
 async function updateIssue(client, issueId, issue) {
     await client.updateIssue(issueId, issue)
         .catch(err => {
-            core.warning(`Could not add version to issue '${issueId}'`)
+            core.warning(`Could not add version to issue '${issueId}' due to error: ${err}`)
         });
 }
 
 async function updateVersion(client, versionId, version) {
     await client.updateVersion(versionId, version)
         .catch(err => {
-            core.warning(`Could not release version '${versionId}'`)
+            core.warning(`Could not release version '${versionId}' due to error: ${err}`)
         });
 }

@@ -31,8 +31,33 @@ jobs:
         with:
           commit_message: "Auto-package action"
 
-
   # test action works running from the graph
+  jira-release:
+    runs-on: ubuntu-latest
+    steps:       
+      - name: grab Jira IDs
+        id: grab-jiras
+        # Grep for our project key following by a '-' and any digits using Pearl style regex and only printing what was matched
+        # Wrap with "" since they are text items in JSON
+        # Add a trailing ',' to each text item and removing newlines
+        # Remove the last ',' to be proper JSON
+        # Print the final list wrapped in '[]' to be proper JSON
+        run: |
+          echo "${{ steps.changelog_reader.outputs.changes }}" > version-changes.txt
+          ITEMS=$(grep -P -o "GHA-\d*" version-changes.txt | sed -r 's/(.+)/"\1"/' | tr '\n' ',' | sed s/.$// )
+          echo ::set-output name=jira-ids::$(echo "[$ITEMS]")
+      
+      - name: create and release jira
+        uses: ./
+        with:
+          host: dangoslen.atlassian.net
+          username: ${{ secrets.JIRA_USER }}
+          token: ${{ secrets.JIRA_TOKEN }}
+          projectKey: GHA
+          issueIds: ${{ steps.grab-jiras.outputs.jira-ids }}
+          release: true
+          version: ${{ steps.read-version.outputs.version }}
+
   enforce-changelog:
     runs-on: ubuntu-latest
     steps:
@@ -96,26 +121,3 @@ jobs:
               <summary>Preview of Release Notes to be Created</summary>
               ${{ steps.changelog_reader.outputs.changes }}
             </details>
-            
-      - name: grab Jira IDs
-        id: grab-jiras
-        # Grep for our project key following by a '-' and any digits using Pearl style regex and only printing what was matched
-        # Wrap with "" since they are text items in JSON
-        # Add a trailing ',' to each text item and removing newlines
-        # Remove the last ',' to be proper JSON
-        # Print the final list wrapped in '[]' to be proper JSON
-        run: |
-          echo "${{ steps.changelog_reader.outputs.changes }}" > version-changes.txt
-          ITEMS=$(grep -P -o "GHA-\d*" version-changes.txt | sed -r 's/(.+)/"\1"/' | tr '\n' ',' | sed s/.$// )
-          echo ::set-output name=jira-ids::$(echo "[$ITEMS]")
-      
-      - name: create and release jira
-        uses: ./
-        with:
-          host: dangoslen.atlassian.net
-          username: ${{ secrets.JIRA_USER }}
-          token: ${{ secrets.JIRA_TOKEN }}
-          projectKey: GHA
-          issueIds: ${{ steps.grab-jiras.outputs.jira-ids }}
-          release: true
-          version: ${{ steps.read-version.outputs.version }}
