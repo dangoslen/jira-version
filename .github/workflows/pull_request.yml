@@ -45,6 +45,12 @@ jobs:
           echo "::set-output name=version::$(jq -r ".version" package.json)"
           echo "::set-output name=tag::v$(jq -r ".version" package.json)"
 
+      - id: changelog_reader
+        uses: mindsers/changelog-reader-action@v2
+        with:
+          version: "${{ steps.read_version.outputs.tag }}"
+          path: ./CHANGELOG.md
+
       - name: grab Jira IDs
         id: grab-jiras
         # Grep for our project key following by a '-' and any digits using Pearl style regex and only printing what was matched
