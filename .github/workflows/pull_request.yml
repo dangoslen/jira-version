@@ -40,6 +40,11 @@ jobs:
           token: ${{ secrets.ACTION_TOKEN }}
           ref: ${{ github.event.pull_request.head.ref }}
 
+      - id: read-version
+        run: |
+          echo "::set-output name=version::$(jq -r ".version" package.json)"
+          echo "::set-output name=tag::v$(jq -r ".version" package.json)"
+
       - name: grab Jira IDs
         id: grab-jiras
         # Grep for our project key following by a '-' and any digits using Pearl style regex and only printing what was matched
