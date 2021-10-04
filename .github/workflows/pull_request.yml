@@ -71,7 +71,7 @@ jobs:
             ```
             ${{ steps.changelog-enforcer.outputs.errorMessage }}
             ```
-            
+
       - id: changelog_reader
         uses: mindsers/changelog-reader-action@v2
         with:
@@ -93,5 +93,6 @@ jobs:
           msg: |
             <details>
               <summary>Preview of Release Notes to be Created</summary>
+              
               ${{ steps.changelog_reader.outputs.changes }}
             </details>
