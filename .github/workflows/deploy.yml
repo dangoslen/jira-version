@@ -1,0 +1,26 @@
+name: "Release Workflow"
+on:
+  workflow_dispatch:
+    inputs: 
+      version:
+        description: The version of the app to deloy. Should also be the tag of the GitHub repository
+        required: true
+    
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2.3.4
+        with:
+          ref: ${{ github.event.inputs.version }}
+      
+      - name: create and release jira
+        if: ${{ steps.check_release.outputs.missing == 'true' }}
+        uses: ./
+        with:
+          host: dangoslen.atlassian.net
+          username: ${{ secrets.JIRA_USER }}
+          token: ${{ secrets.JIRA_TOKEN }}
+          release: true
+          version: ${{ github.event.inputs.version  }}
