@@ -27,7 +27,7 @@
   "homepage": "https://github.com/actions/javascript-action#readme",
   "dependencies": {
     "@actions/core": "^1.5.0",
-    "jira-client": "^6.22.0",
+    "jira-client": "^8.0.0",
     "make-coverage-badge": "^1.2.0"
   },
   "devDependencies": {
